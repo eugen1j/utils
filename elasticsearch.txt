@@ -1,0 +1,157 @@
+curl -XPUT 'http://localhost:9200/domain4/domain/google.com' -d '{"domain" : "google.com", "length" : "10"}'
+
+curl -XDELETE http://localhost:9200/domain
+curl -XDELETE http://localhost:9200/domain4/domain/google.com
+curl -XDELETE http://localhost:9200/wwwsio/allzones
+
+curl -s -XPOST localhost:9200/domain/domain/_bulk --data-binary "/home/allzoneselastic";
+
+curl -XGET 'http://localhost:9200/domain/domain/_search?domain='
+curl -XGET 'http://localhost:9200/domain4/domain/google.com'
+
+
+curl -XPOST 'localhost:9200/_bulk?pretty' -H 'Content-Type: application/json' -d'
+{ "index" : { "_index" : "domain", "_type" : "domain", "_id" : "1" } }
+{ "domain" : "value1" }
+{ "delete" : { "_index" : "test", "_type" : "type1", "_id" : "2" } }
+{ "create" : { "_index" : "test", "_type" : "type1", "_id" : "3" } }
+{ "field1" : "value3" }
+{ "update" : {"_id" : "1", "_type" : "type1", "_index" : "test"} }
+{ "doc" : {"field2" : "value2"} }
+'
+
+
+curl -XGET 'localhost:9200/wwwsio/allzones/_search?pretty' -H 'Content-Type: application/json' -d'{"size":48,"query":{"wildcard":{"domain_search":"*oload*"}}}'
+curl -XGET 'localhost:9200/wwwsio/allzones/_search?pretty' -H 'Content-Type: application/json' -d'{"size":1,"query":{"term":{"domain":"trumptower"}}}'
+curl -XGET 'localhost:9200/wwwsio/allzones/_search?pretty' -H 'Content-Type: application/json' -d'{"size":1,"query":{"term":{"domain":"trumptower"}}}'
+
+
+curl -XGET 'localhost:9200/wwwsio/allzones/_search?pretty' -H 'Content-Type: application/json' -d'{"size":1,"query":{
+    "bool" : {
+        "must" : [{
+            "term" : { "domain" : "xxxxxxxxxx" }
+        }, {
+            "term" : { "domain" : "com" }
+        } ]
+    }
+}}'
+
+
+
+   "filter": {
+      "bool": {
+         "must": [
+            {
+               "regex": {
+                  "_id": {
+                     "value": "*trumptower.*"
+                  }
+               }
+            }
+         ]
+      }
+   }        
+}'
+
+curl -XGET 'localhost:9200/wwwsio/allzones/_search?pretty' -H 'Content-Type: application/json' -d'{"size":1,"query":{
+        "regexp" : { "_id" : "*trumptower.*" }
+    }        
+}'
+
+
+curl -XGET 'localhost:9200/wwwsio/allzones/_count'
+
+curl -XPUT 'localhost:9200/wwwsio/allzones/'
+
+
+
+
+curl -XPUT '127.0.0.1:9200/test_index' -d '
+{
+    "mappings": {
+        "products": {
+            "properties": {
+                "search": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                }
+            }
+        }
+    }
+}'
+
+curl -XDELETE '127.0.0.1:9200/test_index/products/'
+curl -XGET '127.0.0.1:9200/test_index/products/_search?q=name:%D1%82%D0%B5%D0%BA%D1%81%D1%82'
+
+curl -XGET 127.0.0.1:9200/test_index/products/1
+curl -XPOST '127.0.0.1:9200/test_index/products/_bulk' -d '
+{"index":{"_id":1}}
+{"name": "текст тексты текста"}
+{"index":{"_id":2}}
+{"name": "текста текстов текстом"}
+'
+
+
+curl -XGET "127.0.0.1:9200/_analyze?pretty&analyzer=standard&text=%D0%92%D0%B5%D1%81%D0%B5%D0%BB%D1%8B%D0%B5%20%D0%B8%D1%81%D1%82%D0%BE%D1%80%D0%B8%D0%B8%20%D0%BF%D1%80%D0%BE%20%D0%BA%D0%BE%D1%82%D1%8F%D1%82"
+
+curl -XGET "127.0.0.1:9200/_analyze?pretty&analyzer=russian&text=%D0%92%D0%B5%D1%81%D0%B5%D0%BB%D1%8B%D0%B5%20%D0%B8%D1%81%D1%82%D0%BE%D1%80%D0%B8%D0%B8%20%D0%BF%D1%80%D0%BE%20%D0%BA%D0%BE%D1%82%D1%8F%D1%82"
+
+curl -XPOST '127.0.0.1:9200/test_index/_search' -d '
+{
+   "query": {
+      "term": {
+         "products": {
+            "value": "текст"
+         }
+      }
+   }
+}'
+
+
+POST /test_index/products/_bulk
+
+
+curl -XPUT 'localhost:9200/wwwsio' -d '
+    {
+   "settings": {
+      "number_of_shards": 5,
+      "number_of_replicas" : 1,
+      "analysis": {
+         "tokenizer": {
+            "ngram_tokenizer": {
+               "type": "nGram",
+               "min_gram": 4,
+               "max_gram": 12,
+               "token_chars": [ "letter", "digit", "punctuation" ]
+            }
+         },
+         "analyzer": {
+            "ngram_tokenizer_analyzer": {
+               "type": "custom",
+               "tokenizer": "ngram_tokenizer",
+               "filter": [
+                  "lowercase"
+               ]
+            }
+         }
+      }
+   },
+   "mappings": {
+      "allzones": {
+         "properties": {
+            "domain": {
+               "type": "text",
+               "term_vector": "yes",
+               "analyzer": "ngram_tokenizer_analyzer"
+            }, 
+            "length" : {
+                "type": "integer"
+            }
+         }
+         
+      }
+   }
+}'
+    
+    
+    
