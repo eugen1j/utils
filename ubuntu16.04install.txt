@@ -1,9 +1,10 @@
 apt-get update
 apt-get install software-properties-common -y
-sudo add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main"
+sudo add-apt-repository ppa:ondrej/php -y
+echo 'deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main' >> /etc/apt/sources.list.d/pgdg.list
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 apt-get update 
-apt-get install nano make gcc g++ nginx postgresql-9.6 php php7.0-gd php7.0-fpm php7.0-pgsql php7.0-cli php7.0-json php7.0-common php7.0-mbstring php7.0-opcache php7.0-readline php7.0-curl phppgadmin  -y
+apt-get install nano make gcc g++ tcl nginx postgresql-10 php php7.2-gd php7.2-fpm php7.2-pgsql php7.2-cli php7.2-json php7.2-common php7.2-mbstring php7.2-opcache php7.2-readline php7.2-curl phppgadmin  -y
 
 rm  /etc/nginx/sites-available/default
 nano /etc/nginx/sites-available/default
@@ -71,7 +72,7 @@ server {
 
         fastcgi_index index.php;
         include fastcgi.conf;
-        fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+        fastcgi_pass unix:/run/php/php7.2-fpm.sock;
     }
 
 	location / {
@@ -85,10 +86,10 @@ server {
 	location ~ \.php$ {
 		include snippets/fastcgi-php.conf;
 	#
-	#	# With php7.0-cgi alone:
+	#	# With php7.2-cgi alone:
 	#	fastcgi_pass 127.0.0.1:9000;
-	#	# With php7.0-fpm:
-		fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+	#	# With php7.2-fpm:
+		fastcgi_pass unix:/run/php/php7.2-fpm.sock;
 	}
 
 	# deny access to .htaccess files, if Apache's document root
@@ -134,7 +135,7 @@ sudo -u postgres psql
 
 
 service nginx restart
-service php7.0-fpm restart
+service php7.2-fpm restart
 service postgresql restart
 
 
