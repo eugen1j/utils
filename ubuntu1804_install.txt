@@ -1,0 +1,84 @@
+apt-get update
+apt-get purge apache2
+apt-get install nano make gcc g++ tcl php php7.2-gd php7.2-xml php7.2-dom php7.2-zip php7.2-fpm php7.2-pgsql php7.2-cli php7.2-json php7.2-common php7.2-mbstring php7.2-opcache php7.2-readline php7.2-curl phppgadmin certbot redis -y
+
+rm  /etc/nginx/sites-available/default
+nano /etc/nginx/sites-available/default
+##
+# You should look at the following URL's in order to grasp a solid understanding
+# of Nginx configuration files in order to fully unleash the power of Nginx.
+# http://wiki.nginx.org/Pitfalls
+# http://wiki.nginx.org/QuickStart
+# http://wiki.nginx.org/Configuration
+#
+# Generally, you will want to move this file somewhere, and start with a clean
+# file but keep this around for reference. Or just disable in sites-enabled.
+#
+# Please see /usr/share/doc/nginx-doc/examples/ for more detailed examples.
+##
+
+# Default server configuration
+#
+server {
+	listen 80 default_server;
+	listen [::]:80 default_server;
+
+	root /var/www/html;
+
+	# Add index.php to the list if you are using PHP
+	index index.html index.htm index.nginx-debian.html;
+
+	server_name _;
+    
+    location /phppgadmin {
+      
+        alias /usr/share/phppgadmin;
+        index index.php;
+    }
+    
+    
+    location ~* ^/phppgadmin/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ {
+        alias /usr/share/phppgadmin/$1;
+    }
+    
+    location ~ ^/phppgadmin/(.+\.php)$ {
+        alias /usr/share/phppgadmin/$1;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+
+        # Bypass the fact that try_files resets $fastcgi_path_info
+        # see: http://trac.nginx.org/nginx/ticket/321
+        set $path_info $fastcgi_path_info;
+        fastcgi_param PATH_INFO $path_info;
+
+        fastcgi_index index.php;
+        include fastcgi.conf;
+        fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+    }
+
+	location / {
+		# First attempt to serve request as file, then
+		# as directory, then fall back to displaying a 404.
+		try_files $uri $uri/ =404;
+	}
+
+	# pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+	location ~ \.php$ {
+		include snippets/fastcgi-php.conf;
+		fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+	}  
+}
+
+
+
+sed -i -e "s/\['extra_login_security'\] \= true/\['extra_login_security'\] \= false/g" /etc/phppgadmin/config.inc.php
+
+sudo -u postgres psql
+\password postgres
+\q
+
+
+
+service redis restart
+service nginx restart
+service php7.2-fpm restart
+service postgresql restart
