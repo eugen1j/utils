@@ -8,7 +8,11 @@ rm lsd_0.14.0_amd64.deb
 
 chsh -s $(which zsh)
 
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" --unattended 
+
+wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh
+sh install.sh --unattended
+rm install.sh
+
 git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
 
