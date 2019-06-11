@@ -18,6 +18,15 @@ stty echo
 printf "\n"
 su - postgres -c "psql -U postgres -d postgres -c \"alter user postgres with password '$PG_PASS';\""
 
+stty -echo
+printf "Server name: "
+read SERVER_NAME
+stty echo
+printf "\n"
+
+hostname $SERVER_NAME
+ssh-keygen -b 8192 -q -N "" -f ~/.ssh/id_rsa
+
 apt-get autoremove -y
 
 service redis restart
