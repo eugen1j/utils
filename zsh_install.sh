@@ -6,12 +6,13 @@ wget https://github.com/Peltoche/lsd/releases/download/0.14.0/lsd_0.14.0_amd64.d
 dpkg -i lsd_0.14.0_amd64.deb
 rm lsd_0.14.0_amd64.deb
 
+chsh -s $(which zsh)
 
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" --unattended 
 git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
 
-
+tmux new-session -t testing -d
 tmux show -g | sed 's/^/set -g /' > ~/.tmux.conf
 sed -i 's/set -g default-shell "\/bin\/bash"/set -g default-shell "\/bin\/zsh"/g' .tmux.conf
 sed -i 's/set -g mouse off/set -g mouse on/g' .tmux.conf
@@ -27,6 +28,5 @@ git clone --depth 1 https://github.com/junegunn/fzf.git .fzf
 
 wget https://raw.githubusercontent.com/eugen1j/utils/master/.zshrc -O .zshrc
 
-chsh -s $(which zsh)
 
 zsh
