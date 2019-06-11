@@ -12,7 +12,7 @@ apt-get install postgresql-11 -y
 
 
 stty -echo
-printf "Password: "
+printf "Postgres password: "
 read PG_PASS
 stty echo
 printf "\n"
