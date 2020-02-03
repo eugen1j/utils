@@ -3,7 +3,7 @@
 1. Установка бинарника
 
 ```
-apt-get install python3-dev
+apt-get install python3-dev python3.7-dev 
 python3.7 -m pip install uwsgi
 ```
 
