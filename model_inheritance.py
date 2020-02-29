@@ -3,6 +3,10 @@ from django.db.models import TextChoices
 from django.db.models.signals import pre_save
 
 
+"""
+Пример модели уведомлений для изменения статусов разных моделей.
+"""
+
 class NtType(TextChoices):
     COUNTRY = 'COUNTRY', 'COUNTRY'
     CITY = 'CITY', 'CITY'
